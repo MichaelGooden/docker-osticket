@@ -30,6 +30,7 @@ $vars = array(
   'smtp_tls_certs'  => getenv("SMTP_TLS_CERTS")       ?: '/etc/ssl/certs/ca-certificates.crt',
   'smtp_user'       => getenv("SMTP_USER"),
   'smtp_pass'       => getenv("SMTP_PASSWORD"),
+  'smtp_auth'       => getenv("SMTP_AUTH"),
 
   'cron_interval'   => getenv("CRON_INTERVAL")        ?: 5,
 
@@ -82,7 +83,7 @@ $mailConfig = str_replace('%SMTP_PASS%', $vars['smtp_pass'], $mailConfig);
 $mailConfig = str_replace('%SMTP_TLS_CERTS%', $vars['smtp_tls_certs'], $mailConfig);
 
 $mailConfig = str_replace('%SMTP_TLS%', boolToOnOff(convertStrToBool('smtp_tls',true)), $mailConfig);
-$mailConfig = str_replace('%SMTP_AUTH%', boolToOnOff($vars['smtp_user'] != ''), $mailConfig);
+$mailConfig = str_replace('%SMTP_AUTH%', !empty($vars['smtp_auth']) ? $vars['smtp_auth'] : boolToOnOff(getenv("SMTP_USER") != ''), $mailConfig);
 
 if (!file_put_contents(MAIL_CONFIG_FILE, $mailConfig) || !chown(MAIL_CONFIG_FILE,'www-data')
    || !chgrp(MAIL_CONFIG_FILE,'www-data') || !chmod(MAIL_CONFIG_FILE,0600)) {
